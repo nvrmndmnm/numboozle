@@ -1,0 +1,20 @@
+{{ block "index" . }}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Numboozled!</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+</head>
+
+<body>
+    <h1>Numboozle</h1>
+    <p><a href="/game?mode=1">Play Mode 1</a></p>
+    <p><a href="/game?mode=2">Play Mode 2</a></p>
+</body>
+
+</html>
+{{ end }}
