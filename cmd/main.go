@@ -1,15 +1,25 @@
 package main
 
 import (
+	"log"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/nvrmndmnm/numboozle/internal/config"
 	"github.com/nvrmndmnm/numboozle/internal/http-server/handlers/game"
 	"github.com/nvrmndmnm/numboozle/internal/http-server/handlers/pages"
+	"github.com/nvrmndmnm/numboozle/internal/storage"
 )
 
-
-
 func main() {
+	config := config.MustLoadConfig()
+
+	db, err := storage.InitDB(config.Driver, config.Datasource)
+	if err != nil {
+		log.Fatalf("failed to connect to the database: %v", err)
+	}
+	defer db.Close()
+
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
