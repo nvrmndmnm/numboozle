@@ -1,0 +1,16 @@
+[Unit]
+Description=Numboozle Service
+After=network.target postgresql.service
+
+[Service]
+User=observer
+WorkingDirectory=/srv/numboozle
+ExecStart=/srv/numboozle/game
+Environment=PORT=8080
+Restart=always
+RestartSec=4
+StandardOutput=inherit
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target
