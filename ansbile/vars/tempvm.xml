@@ -1,0 +1,39 @@
+<domain type='kvm'>
+  <name>ubuntu-vm</name>
+  <memory unit='KiB'>3072000</memory>
+  <vcpu>2</vcpu>
+  <os>
+    <type arch='x86_64' machine='q35'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+  </features>
+  <cpu mode='host-passthrough'/>
+  <clock offset='utc'/>
+  <devices>
+	  <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='/home/mlnxl/ubuntu-24.04-live-server-amd64.iso'/>
+      <target dev='sda' bus='sata'/>
+      <readonly/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/libvirt/images/ubuntu-vm.qcow2'/>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+    <interface type='bridge'>
+      <source bridge='br0'/>
+      <model type='virtio'/>
+    </interface>
+    <console type='pty'>
+	    <target type='serial' port='0'/>
+    </console>
+    <serial type='pty'>
+	    <target port='0'/>
+    </serial>
+  </devices>
+</domain>
