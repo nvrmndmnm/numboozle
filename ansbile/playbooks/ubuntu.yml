@@ -1,0 +1,35 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    postgresql_version: "{{ lookup('vars', 'postgresql_version_' + ansible_os_family | lower) }}"
+    postgresql_package_name: "{{ lookup('vars', 'postgresql_package_name_' + ansible_os_family | lower) }}"
+    postgresql_data_directory: "{{ lookup('vars', 'postgresql_data_directory }}"
+  vars_files:
+    - ../vars/main.yml
+
+  tasks:
+    - name: Install PostgreSQL 
+      apt:
+        name: "{{ postgresql_package_name }}"
+        state: present
+        update_cache: yes
+
+    - name: Create data directory
+      file:
+        path: "{{ postgresql_data_directory }}"
+        state: directory
+        owner: postgres
+        group: postgres
+        mode: '0700'
+
+    - name: Check if PostgreSQL data directory is initialized
+      stat:
+        path: "{{ postgresql_data_directory }}/PG_VERSION"
+      register: pg_data_dir
+
+    - name: Healthcheck PostgreSQL 
+      service:
+        name: postgresql
+        state: started
+        enabled: yes
