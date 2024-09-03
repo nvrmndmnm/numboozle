@@ -1,0 +1,9 @@
+---
+- name: Setup Environment
+  hosts: all
+
+- import_playbook: ubuntu.yml
+  when: ansible_os_family == "Debian"
+
+- import_playbook: arch.yml
+  when: ansible_os_family == "Archlinux"
