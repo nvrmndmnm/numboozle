@@ -2,7 +2,7 @@
 postgresql_version_debian: "16"
 postgresql_version_archlinux: "16"
 
-postgresql_package_name_Debian: "postgresql"
+postgresql_package_name_debian: "postgresql"
 postgresql_package_name_archlinux: "postgresql"
 
 postgresql_data_directory: "/var/lib/postgres/data"
