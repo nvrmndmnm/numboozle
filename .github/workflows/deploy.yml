@@ -48,8 +48,9 @@ jobs:
 
       - name: extract web files
         env:
+          REMOTE_KEY: ${{ secrets.REMOTE_KEY }}
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           DEPLOY_DIRECTORY: /srv/numboozle
         run: |
-          ssh $REMOTE_USER@$REMOTE_HOST "tar -xzf $DEPLOY_DIRECTORY/web.tar.gz -C $DEPLOY_DIRECTORY"
+          ssh -i ~/.ssh/gh_key $REMOTE_USER@$REMOTE_HOST "tar -xzf $DEPLOY_DIRECTORY/web.tar.gz -C $DEPLOY_DIRECTORY"
