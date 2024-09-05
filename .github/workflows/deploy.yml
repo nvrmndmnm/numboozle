@@ -1,0 +1,55 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  deploy:
+    name: build and deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      - name: set up go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23'
+      
+      - name: build app
+        run: |
+          go build -o numboo ./cmd/main.go
+
+      - name: archive web files
+        run: |
+          tar -czf web.tar.gz web/
+
+      - name: copy to remote
+        env:
+          REMOTE_KEY: ${{ secrets.REMOTE_KEY }}
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          DEPLOY_DIRECTORY: /srv/numboozle
+        run: |
+          sudo apt-get install -y rsync ssh
+          
+          mkdir -p ~/.ssh
+          echo "$REMOTE_KEY" > ~/.ssh/gh_key
+          chmod 600 ~/.ssh/gh_key
+          ssh-keyscan -H "$REMOTE_HOST" >> ~/.ssh/known_hosts
+
+          ssh -i ~/.ssh/gh_key $REMOTE_USER@$REMOTE_HOST "sudo mkdir -p $DEPLOY_DIRECTORY"
+
+          rsync -avz -e 'ssh -i ~/.ssh/gh_key' numboo $REMOTE_USER@$REMOTE_HOST:$DEPLOY_DIRECTORY
+          rsync -avz -e 'ssh -i ~/.ssh/gh_key' web.tar.gz $REMOTE_USER@$REMOTE_HOST:$DEPLOY_DIRECTORY
+
+      - name: extract web files
+        env:
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          DEPLOY_DIRECTORY: /srv/numboozle
+        run: |
+          ssh $REMOTE_USER@$REMOTE_HOST "tar -xzf $DEPLOY_DIRECTORY/web.tar.gz -C $DEPLOY_DIRECTORY"
