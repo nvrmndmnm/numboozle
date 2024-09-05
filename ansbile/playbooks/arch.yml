@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: arch
   become: yes
   vars:
     postgresql_version: "{{ lookup('vars', 'postgresql_version_' + ansible_os_family | lower) }}"
