@@ -10,6 +10,12 @@ jobs:
     name: build and deploy
     runs-on: ubuntu-latest
 
+    env:
+      REMOTE_KEY: ${{ secrets.REMOTE_KEY }}
+      REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+      REMOTE_USER: ${{ secrets.REMOTE_USER }}
+      DEPLOY_DIRECTORY: "/srv/numboozle"
+
     steps:
       - name: checkout repo
         uses: actions/checkout@v3
@@ -28,29 +34,18 @@ jobs:
           tar -czf web.tar.gz web/
 
       - name: copy to remote
-        env:
-          REMOTE_KEY: ${{ secrets.REMOTE_KEY }}
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          DEPLOY_DIRECTORY: /srv/numboozle
         run: |
-          sudo apt-get install -y rsync ssh
-          
           mkdir -p ~/.ssh
           echo "$REMOTE_KEY" > ~/.ssh/gh_key
           chmod 600 ~/.ssh/gh_key
           ssh-keyscan -H "$REMOTE_HOST" >> ~/.ssh/known_hosts
 
-          ssh -i ~/.ssh/gh_key $REMOTE_USER@$REMOTE_HOST "sudo mkdir -p $DEPLOY_DIRECTORY"
+          ssh -i ~/.ssh/gh_key $REMOTE_USER@$REMOTE_HOST "sudo mkdir -p $DEPLOY_DIRECTORY &&
+           sudo chown $REMOTE_USER:$REMOTE_USER $DEPLOY_DIRECTORY"
 
           rsync -avz -e 'ssh -i ~/.ssh/gh_key' numboo $REMOTE_USER@$REMOTE_HOST:$DEPLOY_DIRECTORY
           rsync -avz -e 'ssh -i ~/.ssh/gh_key' web.tar.gz $REMOTE_USER@$REMOTE_HOST:$DEPLOY_DIRECTORY
 
       - name: extract web files
-        env:
-          REMOTE_KEY: ${{ secrets.REMOTE_KEY }}
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          DEPLOY_DIRECTORY: /srv/numboozle
         run: |
           ssh -i ~/.ssh/gh_key $REMOTE_USER@$REMOTE_HOST "tar -xzf $DEPLOY_DIRECTORY/web.tar.gz -C $DEPLOY_DIRECTORY"
