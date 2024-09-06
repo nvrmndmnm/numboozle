@@ -49,3 +49,14 @@ jobs:
       - name: extract web files
         run: |
           ssh -i ~/.ssh/gh_key $REMOTE_USER@$REMOTE_HOST "tar -xzf $DEPLOY_DIRECTORY/web.tar.gz -C $DEPLOY_DIRECTORY"
+
+      - name: install Ansible
+        run: |
+          sudo apt install ansible -y
+            
+      - name: run playbook
+        env:
+          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+        run: |
+          ansible-playbook -i ./ansible/inventory/hosts.yml ./ansible/playbooks/main.yml -l darlene \
+          --vault-password-file <(cat <<<"$ANSIBLE_VAULT_PASSWORD")
