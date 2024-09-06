@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: debian
   become: yes
   vars:
     postgresql_version: "{{ lookup('vars', 'postgresql_version_' + ansible_os_family | lower) }}"
@@ -7,9 +7,10 @@
     postgresql_data_directory: "{{ lookup('vars', 'postgresql_data_directory }}"
   vars_files:
     - ../vars/main.yml
+    - ../vars/vault.yml
 
   tasks:
-    - name: Install PostgreSQL 
+    - name: Install PostgreSQL
       apt:
         name: "{{ postgresql_package_name }}"
         state: present
@@ -28,8 +29,41 @@
         path: "{{ postgresql_data_directory }}/PG_VERSION"
       register: pg_data_dir
 
-    - name: Healthcheck PostgreSQL 
+    - name: Healthcheck PostgreSQL
       service:
         name: postgresql
         state: started
         enabled: yes
+
+    - name: Install psycopg2 for Python3
+      apt:
+        name: python3-psycopg2
+        state: present
+        update_cache: yes
+
+    - name: Create PostgreSQL user
+      become_user: postgres
+      postgresql_user:
+        name: "{{ postgresql_user }}"
+        password: "{{ postgresql_password }}" 
+
+    - name: Create PostgreSQL database
+      become_user: postgres
+      postgresql_db:
+        name: numboozle
+        owner: "{{ postgresql_user }}"
+
+    - name: Create systemd service
+      copy:
+        src: ../files/numboozle.service
+        dest: /etc/systemd/system/numboozle.service
+
+    - name: Reload systemd daemon
+      systemd:
+        daemon_reload: yes
+
+    - name: Start and enable Go application service
+      systemd:
+        name: numboozle
+        enabled: yes
+        state: started
