@@ -1,6 +1,8 @@
 ---
 - name: Setup Environment
   hosts: all
+  vars:
+    ansible_python_interpreter: auto_silent
 
 - import_playbook: ubuntu.yml
   when: ansible_os_family == "Debian"
