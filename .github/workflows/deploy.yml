@@ -57,6 +57,8 @@ jobs:
       - name: run playbook
         env:
           ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+          REMOTE_HOST: 46.226.123.173
+          REMOTE_USER: observer
         run: |
-          REMOTE_HOST=${{ secrets.REMOTE_HOST }} REMOTE_USER=${{ secrets.REMOTE_USER }} ansible-playbook -i ./ansible/inventory/hosts.yml ./ansible/playbooks/main.yml -l darlene \
+          ansible-playbook -i ./ansible/inventory/hosts.yml ./ansible/playbooks/main.yml -l darlene \
           --vault-password-file <(cat <<<"$ANSIBLE_VAULT_PASSWORD")
