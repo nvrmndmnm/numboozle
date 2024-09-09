@@ -53,10 +53,6 @@ jobs:
       - name: install Ansible
         run: |
           sudo apt install ansible -y
-
-      - name: check host
-        run: |
-          cat ~/.ssh/known_hosts
           
       - name: run playbook
         env:
