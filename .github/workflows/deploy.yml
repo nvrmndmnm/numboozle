@@ -58,5 +58,6 @@ jobs:
         env:
           ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
-          ansible-playbook -i ./ansible/inventory/hosts.yml ./ansible/playbooks/main.yml -l darlene \
+          cd ansible
+          ansible-playbook -i ./inventory/hosts.yml ./playbooks/main.yml -l darlene \
           --vault-password-file <(cat <<<"$ANSIBLE_VAULT_PASSWORD")
