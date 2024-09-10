@@ -67,3 +67,18 @@
         name: numboozle
         enabled: yes
         state: started
+
+    - name: Healthcheck Go app
+      block:
+      - name: Check if binary is running
+        command: pgrep -f numboozle
+        register: go_process
+        failed_when: go_process.rc != 0
+        changed_when: false
+
+      - name: Check app HTTP endpoint
+        uri:
+          url: "http://localhost:8080/health"
+          status_code: 200
+        register: go_http_check
+        failed_when: go_http_check.status != 200
