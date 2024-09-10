@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -37,5 +38,6 @@ func main() {
 	e.GET("/game", game.GameHandler)
 	e.POST("/game/click", game.ClickHandler)
 
+	e.GET("/health", func(c echo.Context) error { return c.String(http.StatusOK, "OK") })
 	e.Logger.Fatal(e.Start(":8080"))
 }
