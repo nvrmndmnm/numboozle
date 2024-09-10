@@ -27,7 +27,7 @@ jobs:
       
       - name: build app
         run: |
-          go build -o numboo ./cmd/main.go
+          go build -o numboozle ./cmd/main.go
 
       - name: archive web files
         run: |
