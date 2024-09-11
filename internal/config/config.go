@@ -8,7 +8,6 @@ import (
 )
 
 type Config struct {
-	Driver     string `yaml:"driver"`
 	Datasource string `yaml:"datasource"`
 }
 

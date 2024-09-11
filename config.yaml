@@ -1,2 +1,1 @@
-driver: "sqlite3"
-datasource: "./db/dev.db"
+datasource: "user=numboozler password=numboozler host=darlene-vm dbname=numboozle"
