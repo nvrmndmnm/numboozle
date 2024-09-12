@@ -18,7 +18,7 @@
             {{ range $i, $row := .Grid }}
             <tr>
                 {{ range $j, $num := $row }}
-                <td data-num="{{ $num }}" data-time="0" hx-post="/game/score"
+                <td data-num="{{ $num }}" data-time="0" hx-post="/game/score" hx-trigger="mousedown"
                     hx-vals='{"number": "{{ $num }}", "time": "0"}'>
                     {{ if or (eq $.Mode 1) (eq $num 1) }}
                     {{ $num }}
