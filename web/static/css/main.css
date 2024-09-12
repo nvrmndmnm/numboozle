@@ -35,8 +35,9 @@ td:hover {
 }
 
 #timer,
-#score {
+#score,
+#replay {
     text-align: center;
     font-size: 24px;
-    margin-top: 20px;
+    margin: 20px auto;
 }
