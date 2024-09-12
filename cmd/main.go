@@ -7,7 +7,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/nvrmndmnm/numboozle/internal/config"
-	"github.com/nvrmndmnm/numboozle/internal/http-server/handlers/game"
+	"github.com/nvrmndmnm/numboozle/internal/http-server/handlers/game/classic"
+	"github.com/nvrmndmnm/numboozle/internal/http-server/handlers/game/score"
 	"github.com/nvrmndmnm/numboozle/internal/http-server/handlers/pages"
 	"github.com/nvrmndmnm/numboozle/internal/storage"
 )
@@ -15,11 +16,11 @@ import (
 func main() {
 	config := config.MustLoadConfig()
 
-	db, err := storage.InitDB(config.Driver, config.Datasource)
+	storage, err := storage.New(config.Datasource)
 	if err != nil {
 		log.Fatalf("failed to connect to the database: %v", err)
 	}
-	defer db.Close()
+	defer storage.Close()
 
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -35,8 +36,8 @@ func main() {
 		return c.Render(200, "index", page)
 	})
 
-	e.GET("/game", game.GameHandler)
-	e.POST("/game/click", game.ClickHandler)
+	e.GET("/game", classic.New())
+	e.POST("/game/score", score.New(storage))
 
 	e.GET("/health", func(c echo.Context) error { return c.String(http.StatusOK, "OK") })
 	e.Logger.Fatal(e.Start(":8080"))
